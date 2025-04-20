@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Looping Video with Watch Count</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Never kys</title>
   <style>
     html, body {
       margin: 0;
@@ -61,6 +62,28 @@
       object-fit: contain;
       background: black;
     }
+
+    /* Mobile-only button to toggle GUI */
+    #mobileToggleButton {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      color: white;
+      padding: 10px 20px;
+      border-radius: 8px;
+      display: none; /* Initially hidden */
+      z-index: 20;
+      cursor: pointer;
+    }
+
+    /* Show the mobile button only on mobile */
+    @media (max-width: 768px) {
+      #mobileToggleButton {
+        display: block;
+      }
+    }
   </style>
 </head>
 <body>
@@ -78,6 +101,8 @@
     Your browser does not support the video tag.
   </video>
 
+  <div id="mobileToggleButton">Toggle Controls (Mobile Only)</div>
+
   <script>
     const video = document.getElementById('myVideo');
     const unmuteBtn = document.getElementById('unmuteBtn');
@@ -85,6 +110,7 @@
     const controls = document.getElementById('controls');
     const infoBox = document.getElementById('infoBox');
     const watchCount = document.getElementById('watchCount');
+    const mobileToggleButton = document.getElementById('mobileToggleButton');
 
     let watchTimes = 0;
 
@@ -120,6 +146,14 @@
         infoBox.style.display = isHidden ? 'block' : 'none';
         watchCount.style.display = isHidden ? 'block' : 'none';
       }
+    });
+
+    // Mobile button to toggle controls
+    mobileToggleButton.addEventListener('click', () => {
+      const isHidden = controls.style.display === 'none';
+      controls.style.display = isHidden ? 'flex' : 'none';
+      infoBox.style.display = isHidden ? 'block' : 'none';
+      watchCount.style.display = isHidden ? 'block' : 'none';
     });
   </script>
 </body>
