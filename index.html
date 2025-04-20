@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Never kys</title>
+  <title>Never kys</title> <!-- Updated the title -->
   <style>
     html, body {
       margin: 0;
@@ -66,22 +66,26 @@
     /* Mobile-only button to toggle GUI */
     #mobileToggleButton {
       position: fixed;
-      bottom: 20px;
+      bottom: 80px; /* Adjusted so it doesn't overlap with Times Watched button */
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(0, 0, 0, 0.6);
+      background: rgba(0, 0, 0, 0.8);
       color: white;
-      padding: 10px 20px;
+      padding: 15px 25px;
       border-radius: 8px;
       display: none; /* Initially hidden */
       z-index: 20;
       cursor: pointer;
+      font-size: 16px;
     }
 
     /* Show the mobile button only on mobile */
     @media (max-width: 768px) {
       #mobileToggleButton {
         display: block;
+      }
+      #infoBox {
+        display: none; /* Hide the infoBox on mobile */
       }
     }
   </style>
@@ -93,8 +97,8 @@
     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
   </div>
 
-  <div id="infoBox">Press "A" to hide/show the GUI controls</div>
-  <div id="watchCount">Times Watched: 0</div>
+  <div id="infoBox">Press "A" to hide/show the GUI controls</div> <!-- Emojis removed -->
+  <div id="watchCount">Times Watched: 0</div> <!-- Emojis removed -->
 
   <video id="myVideo" autoplay loop muted playsinline>
     <source src="never kys.mp4" type="video/mp4">
@@ -134,7 +138,7 @@
       if (video.currentTime === 0 && video.paused === false) {
         // Increment the count when the video loops
         watchTimes++;
-        watchCount.textContent = `Times Watched: ${watchTimes}`;
+        watchCount.textContent = `Times Watched: ${watchTimes}`;  // Updated text
       }
     });
 
