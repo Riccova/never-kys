@@ -156,8 +156,12 @@
     mobileToggleButton.addEventListener('click', () => {
       const isHidden = controls.style.display === 'none';
       controls.style.display = isHidden ? 'flex' : 'none';
-      infoBox.style.display = isHidden ? 'block' : 'none';
       watchCount.style.display = isHidden ? 'block' : 'none';
+
+      // Keep infoBox hidden on mobile
+      if (window.innerWidth <= 768) {
+        infoBox.style.display = 'none';
+      }
     });
   </script>
 </body>
