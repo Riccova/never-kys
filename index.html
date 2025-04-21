@@ -98,6 +98,21 @@
       cursor: pointer;
     }
 
+    #tabletWarning {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 8px;
+      z-index: 25;
+      font-size: 16px;
+      cursor: pointer;
+      display: none; /* Hidden by default */
+    }
+
     @media (max-width: 1024px) {
       /* Show the mobile button on smaller screens (tablet and mobile) */
       #mobileToggleButton {
@@ -143,6 +158,7 @@
   <div id="infoBox" onclick="toggleControls()">Press "A" to hide/show the GUI</div>
   <div id="mobileToggleButton" onclick="toggleControls()">Hide/Show GUI</div>
   <div id="unmuteButton" onclick="unmuteVideo()">Unmute</div>
+  <div id="tabletWarning" onclick="hideTabletWarning()">The site might not work properly on tablets. Click here to dismiss this message.</div>
 
   <video id="myVideo" autoplay playsinline muted>
     <source id="videoSource" src="never kys.mp4" type="video/mp4">
@@ -161,6 +177,7 @@
     const infoBox = document.getElementById("infoBox");
     const mobileToggleButton = document.getElementById("mobileToggleButton");
     const unmuteButton = document.getElementById("unmuteButton");
+    const tabletWarning = document.getElementById("tabletWarning");
 
     const sessionCounter = document.getElementById("watchCountSession");
     const totalCounter = document.getElementById("watchCountTotal");
@@ -244,6 +261,16 @@
       sessionCounter.style.display = isHidden ? "block" : "none";
       totalCounter.style.display = isHidden ? "block" : "none";
       infoBox.style.display = isHidden ? "block" : "none";  // Ensure the "Press A" text toggles as well
+    }
+
+    function hideTabletWarning() {
+      tabletWarning.style.display = "none"; // Hide the tablet warning when clicked
+      localStorage.setItem("tabletWarningDismissed", "true"); // Mark it as dismissed
+    }
+
+    // Show tablet warning only if it has not been dismissed yet
+    if (!localStorage.getItem("tabletWarningDismissed")) {
+      tabletWarning.style.display = "block"; // Show the tablet warning
     }
   </script>
 </body>
