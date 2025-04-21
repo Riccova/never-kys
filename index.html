@@ -83,9 +83,29 @@
       cursor: pointer;
     }
 
+    #unmuteButton {
+      position: fixed;
+      bottom: 140px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 12px 20px;
+      border-radius: 8px;
+      display: none;
+      z-index: 20;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
     @media (max-width: 1024px) {
       /* Show the mobile button on smaller screens (tablet and mobile) */
       #mobileToggleButton {
+        display: block;
+      }
+
+      /* Show the unmute button on mobile */
+      #unmuteButton {
         display: block;
       }
 
@@ -122,6 +142,7 @@
   <div id="watchCountTotal">Total Times Watched: 0</div>
   <div id="infoBox" onclick="toggleControls()">Press "A" to hide/show the GUI</div>
   <div id="mobileToggleButton" onclick="toggleControls()">Hide/Show GUI</div>
+  <div id="unmuteButton" onclick="unmuteVideo()">Unmute</div>
 
   <video id="myVideo" autoplay playsinline muted>
     <source id="videoSource" src="never kys.mp4" type="video/mp4">
@@ -139,6 +160,7 @@
     const controls = document.getElementById("controls");
     const infoBox = document.getElementById("infoBox");
     const mobileToggleButton = document.getElementById("mobileToggleButton");
+    const unmuteButton = document.getElementById("unmuteButton");
 
     const sessionCounter = document.getElementById("watchCountSession");
     const totalCounter = document.getElementById("watchCountTotal");
@@ -184,14 +206,6 @@
       // Ensure the video is muted initially for autoplay to work
       video.muted = true;
 
-      // After the page loads, allow user interaction to unmute
-      video.play().then(() => {
-        // Unmute the video after it starts playing
-        video.muted = false;
-      }).catch((error) => {
-        console.error('Error attempting to play video:', error);
-      });
-
       // Optionally, switch to Easter egg video
       if (Math.random() < CHANCE) {
         isEasterEgg = true;
@@ -215,6 +229,14 @@
     });
 
     mobileToggleButton.addEventListener("click", toggleControls);
+
+    unmuteButton.addEventListener("click", unmuteVideo);
+
+    function unmuteVideo() {
+      video.muted = false;
+      unmuteButton.style.display = "none"; // Hide the unmute button after unmuting
+      video.play(); // Start playing the video if paused
+    }
 
     function toggleControls() {
       const isHidden = controls.style.display === "none";
