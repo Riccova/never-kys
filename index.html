@@ -83,22 +83,45 @@
       cursor: pointer;
     }
 
+    #unmuteBtn {
+      font-size: 14px;
+      padding: 8px 12px;
+      border-radius: 8px;
+      background-color: rgba(0, 0, 0, 0.6);
+      color: white;
+    }
+
     @media (max-width: 768px) {
       #mobileToggleButton {
         display: block;
       }
+
+      /* Hide 'Press A' text on mobile */
       #infoBox {
-        display: block !important;
+        display: none !important;
+      }
+
+      /* Make the unmute button smaller */
+      #unmuteBtn {
+        font-size: 12px;
+        padding: 6px 10px;
+      }
+
+      /* Adjust other controls to be more compact */
+      #controls {
+        top: 10px;
+        left: 10px;
+      }
+      
+      #watchCountSession, #watchCountTotal {
+        font-size: 12px;
+        padding: 8px 10px;
       }
     }
 
     /* Fix overlap issue */
     #volumeSlider {
       margin-top: 10px;
-    }
-
-    #unmuteBtn {
-      margin-bottom: 10px;
     }
   </style>
 </head>
