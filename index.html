@@ -1,55 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Never kys</title> <!-- Updated the title -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Never kys</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       background: black;
       height: 100%;
-      width: 100%;
       overflow: hidden;
       font-family: sans-serif;
       color: white;
-    }
-
-    #controls {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      background: rgba(0,0,0,0.6);
-      padding: 10px;
-      border-radius: 8px;
-    }
-
-    #volumeSlider {
-      width: 150px;
-    }
-
-    #infoBox, #watchCount {
-      position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
-      background: rgba(0,0,0,0.6);
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-size: 14px;
-      z-index: 10;
-    }
-
-    #infoBox {
-      bottom: 60px;
-    }
-
-    #watchCount {
-      bottom: 20px;
     }
 
     video {
@@ -57,112 +20,177 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      height: 100%;
       width: 100%;
+      height: 100%;
       object-fit: contain;
-      background: black;
     }
 
-    /* Mobile-only button to toggle GUI */
+    #controls, #watchCountSession, #watchCountTotal, #infoBox {
+      position: absolute;
+      z-index: 10;
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 15px;
+      border-radius: 8px;
+    }
+
+    #controls {
+      top: 20px;
+      left: 20px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    #watchCountSession {
+      bottom: 20px;
+      left: 20px;
+    }
+
+    #watchCountTotal {
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    #infoBox {
+      bottom: 60px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     #mobileToggleButton {
       position: fixed;
-      bottom: 80px; /* Adjusted so it doesn't overlap with Times Watched button */
+      bottom: 80px;
       left: 50%;
       transform: translateX(-50%);
       background: rgba(0, 0, 0, 0.8);
       color: white;
-      padding: 15px 25px;
+      padding: 12px 20px;
       border-radius: 8px;
-      display: none; /* Initially hidden */
+      display: none;
       z-index: 20;
-      cursor: pointer;
       font-size: 16px;
+      cursor: pointer;
     }
 
-    /* Show the mobile button only on mobile */
     @media (max-width: 768px) {
       #mobileToggleButton {
         display: block;
       }
       #infoBox {
-        display: none !important; /* Ensure infoBox is hidden on mobile */
+        display: none !important;
       }
     }
   </style>
 </head>
 <body>
   <div id="controls">
-    <button id="unmuteBtn">🔊 Unmute</button>
+    <button id="unmuteBtn">Unmute</button>
     <label for="volumeSlider">Volume</label>
     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
   </div>
 
-  <div id="infoBox">Press "A" to hide/show the GUI </div> <!-- Emojis removed -->
-  <div id="watchCount">Times Watched: 0</div> <!-- Emojis removed -->
+  <div id="watchCountSession">Times Watched This Session: 0</div>
+  <div id="watchCountTotal">Total Times Watched: 0</div>
+  <div id="infoBox">Press "A" to hide/show the GUI controls</div>
+  <div id="mobileToggleButton">Toggle Controls (Mobile)</div>
 
-  <video id="myVideo" autoplay loop muted playsinline>
-    <source src="never kys.mp4" type="video/mp4">
+  <video id="myVideo" autoplay muted playsinline>
+    <source id="videoSource" src="never kys.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
 
-  <div id="mobileToggleButton">Hide GUI</div>
-
   <script>
-    const video = document.getElementById('myVideo');
-    const unmuteBtn = document.getElementById('unmuteBtn');
-    const volumeSlider = document.getElementById('volumeSlider');
-    const controls = document.getElementById('controls');
-    const infoBox = document.getElementById('infoBox');
-    const watchCount = document.getElementById('watchCount');
-    const mobileToggleButton = document.getElementById('mobileToggleButton');
+    const MAIN_VIDEO = "never kys.mp4";
+    const RARE_VIDEO = "kys.mp4";
+    const CHANCE = 0.05; // 1 in 20
 
-    let watchTimes = 0;
+    const video = document.getElementById("myVideo");
+    const source = document.getElementById("videoSource");
+    const unmuteBtn = document.getElementById("unmuteBtn");
+    const volumeSlider = document.getElementById("volumeSlider");
+    const controls = document.getElementById("controls");
+    const infoBox = document.getElementById("infoBox");
+    const mobileToggleButton = document.getElementById("mobileToggleButton");
 
-    // Unmute logic
-    unmuteBtn.addEventListener('click', () => {
+    const sessionCounter = document.getElementById("watchCountSession");
+    const totalCounter = document.getElementById("watchCountTotal");
+
+    let sessionViews = 0;
+    let totalViews = parseInt(localStorage.getItem("totalViews") || "0");
+    let isEasterEgg = false;
+
+    updateCounters();
+
+    function updateCounters() {
+      sessionCounter.textContent = `Times Watched This Session: ${sessionViews}`;
+      totalCounter.textContent = `Total Times Watched: ${totalViews}`;
+    }
+
+    function switchVideoTo(src) {
+      video.pause();
+      source.src = src;
+      video.load();
+      video.play();
+    }
+
+    function handleVideoEnd() {
+      sessionViews++;
+      totalViews++;
+      localStorage.setItem("totalViews", totalViews);
+      updateCounters();
+
+      if (isEasterEgg) {
+        isEasterEgg = false;
+        switchVideoTo(MAIN_VIDEO);
+      } else {
+        if (Math.random() < CHANCE) {
+          isEasterEgg = true;
+          switchVideoTo(RARE_VIDEO);
+        } else {
+          switchVideoTo(MAIN_VIDEO);
+        }
+      }
+    }
+
+    window.addEventListener("load", () => {
+      if (Math.random() < CHANCE) {
+        isEasterEgg = true;
+        switchVideoTo(RARE_VIDEO);
+      }
+    });
+
+    video.addEventListener("ended", handleVideoEnd);
+
+    unmuteBtn.addEventListener("click", () => {
       video.muted = false;
       video.play();
     });
 
-    // Volume logic
-    video.volume = volumeSlider.value;
-    volumeSlider.addEventListener('input', () => {
+    volumeSlider.addEventListener("input", () => {
       video.volume = volumeSlider.value;
       if (video.muted && video.volume > 0) {
         video.muted = false;
       }
     });
 
-    // Check when the video loops and update watch count
-    video.addEventListener('timeupdate', () => {
-      if (video.currentTime === 0 && video.paused === false) {
-        // Increment the count when the video loops
-        watchTimes++;
-        watchCount.textContent = `Times Watched: ${watchTimes}`;  // Updated text
+    document.addEventListener("keydown", (e) => {
+      if (e.key.toLowerCase() === "a") {
+        toggleControls();
       }
     });
 
-    // Toggle GUI visibility with "A" key
-    document.addEventListener('keydown', (e) => {
-      if (e.key.toLowerCase() === 'a') {
-        const isHidden = controls.style.display === 'none';
-        controls.style.display = isHidden ? 'flex' : 'none';
-        infoBox.style.display = isHidden ? 'block' : 'none';
-        watchCount.style.display = isHidden ? 'block' : 'none';
-      }
-    });
+    mobileToggleButton.addEventListener("click", toggleControls);
 
-    // Mobile button to toggle controls
-    mobileToggleButton.addEventListener('click', () => {
-      const isHidden = controls.style.display === 'none';
-      controls.style.display = isHidden ? 'flex' : 'none';
-      watchCount.style.display = isHidden ? 'block' : 'none';
-
-      // Keep infoBox hidden on mobile
-      if (window.innerWidth <= 768) {
-        infoBox.style.display = 'none';
+    function toggleControls() {
+      const isHidden = controls.style.display === "none";
+      controls.style.display = isHidden ? "flex" : "none";
+      sessionCounter.style.display = isHidden ? "block" : "none";
+      totalCounter.style.display = isHidden ? "block" : "none";
+      if (window.innerWidth > 768) {
+        infoBox.style.display = isHidden ? "block" : "none";
       }
-    });
+    }
   </script>
 </body>
 </html>
