@@ -91,12 +91,12 @@
       color: white;
     }
 
-    @media (max-width: 768px) {
+    @media (max-width: 1024px) {
       #mobileToggleButton {
         display: block;
       }
 
-      /* Hide 'Press A' text on mobile */
+      /* Hide 'Press A' text on all smaller screens (tablet and mobile) */
       #infoBox {
         display: none !important;
       }
@@ -134,7 +134,7 @@
 
   <div id="watchCountSession">Times Watched This Session: 0</div>
   <div id="watchCountTotal">Total Times Watched: 0</div>
-  <div id="infoBox">Press "A" to hide/show the GUI</div>
+  <div id="infoBox">Press "A" to hide/show the GUI controls</div>
   <div id="mobileToggleButton">Hide/Show GUI</div>
 
   <video id="myVideo" autoplay muted playsinline>
