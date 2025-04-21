@@ -83,36 +83,23 @@
       cursor: pointer;
     }
 
-    #unmuteBtn {
-      font-size: 14px;
-      padding: 8px 12px;
-      border-radius: 8px;
-      background-color: rgba(0, 0, 0, 0.6);
-      color: white;
-    }
-
     @media (max-width: 1024px) {
+      /* Show the mobile button on smaller screens (tablet and mobile) */
       #mobileToggleButton {
         display: block;
       }
 
-      /* Hide 'Press A' text on all smaller screens (tablet and mobile) */
+      /* Hide 'Press A' text on smaller screens */
       #infoBox {
         display: none !important;
       }
 
-      /* Make the unmute button smaller */
-      #unmuteBtn {
-        font-size: 12px;
-        padding: 6px 10px;
-      }
-
-      /* Adjust other controls to be more compact */
+      /* Adjust controls for mobile */
       #controls {
         top: 10px;
         left: 10px;
       }
-      
+
       #watchCountSession, #watchCountTotal {
         font-size: 12px;
         padding: 8px 10px;
@@ -127,17 +114,16 @@
 </head>
 <body>
   <div id="controls">
-    <button id="unmuteBtn">Unmute</button>
     <label for="volumeSlider">Volume</label>
     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
   </div>
 
   <div id="watchCountSession">Times Watched This Session: 0</div>
   <div id="watchCountTotal">Total Times Watched: 0</div>
-  <div id="infoBox">Press "A" to hide/show the GUI controls</div>
+  <div id="infoBox">Press "A" to hide/show the GUI</div>
   <div id="mobileToggleButton">Hide/Show GUI</div>
 
-  <video id="myVideo" autoplay muted playsinline>
+  <video id="myVideo" autoplay playsinline muted>
     <source id="videoSource" src="never kys.mp4" type="video/mp4">
     Your browser does not support the video tag.
   </video>
@@ -149,7 +135,6 @@
 
     const video = document.getElementById("myVideo");
     const source = document.getElementById("videoSource");
-    const unmuteBtn = document.getElementById("unmuteBtn");
     const volumeSlider = document.getElementById("volumeSlider");
     const controls = document.getElementById("controls");
     const infoBox = document.getElementById("infoBox");
@@ -196,6 +181,18 @@
     }
 
     window.addEventListener("load", () => {
+      // Ensure the video is muted initially for autoplay to work
+      video.muted = true;
+      
+      // After the page loads, allow user interaction to unmute
+      video.play().then(() => {
+        // Unmute the video after it starts playing
+        video.muted = false;
+      }).catch((error) => {
+        console.error('Error attempting to play video:', error);
+      });
+
+      // Optionally, switch to Easter egg video
       if (Math.random() < CHANCE) {
         isEasterEgg = true;
         switchVideoTo(RARE_VIDEO);
@@ -203,11 +200,6 @@
     });
 
     video.addEventListener("ended", handleVideoEnd);
-
-    unmuteBtn.addEventListener("click", () => {
-      video.muted = false;
-      video.play();
-    });
 
     volumeSlider.addEventListener("input", () => {
       video.volume = volumeSlider.value;
