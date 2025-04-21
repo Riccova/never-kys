@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Never kys</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Never Kys</title>
   <style>
     html, body {
       margin: 0;
@@ -64,7 +64,6 @@
       padding: 10px 15px;
       border-radius: 8px;
       font-size: 14px;
-      display: block;
       z-index: 15;
     }
 
@@ -110,26 +109,36 @@
       z-index: 25;
       font-size: 16px;
       cursor: pointer;
-      display: none; /* Hidden by default */
+      display: none;
+    }
+
+    #volumeWarning {
+      position: absolute;
+      top: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      color: white;
+      z-index: 10;
+      display: none;
     }
 
     @media (max-width: 1024px) {
-      /* Show the mobile button on smaller screens (tablet and mobile) */
       #mobileToggleButton {
         display: block;
       }
 
-      /* Show the unmute button on mobile */
       #unmuteButton {
         display: block;
       }
 
-      /* Hide 'Press A' text on smaller screens */
       #infoBox {
-        display: none !important;
+        display: none;
       }
 
-      /* Adjust controls for mobile */
       #controls {
         top: 10px;
         left: 10px;
@@ -139,11 +148,6 @@
         font-size: 12px;
         padding: 8px 10px;
       }
-    }
-
-    /* Fix overlap issue */
-    #volumeSlider {
-      margin-top: 10px;
     }
   </style>
 </head>
@@ -159,6 +163,7 @@
   <div id="mobileToggleButton" onclick="toggleControls()">Hide/Show GUI</div>
   <div id="unmuteButton" onclick="unmuteVideo()">Unmute</div>
   <div id="tabletWarning" onclick="hideTabletWarning()">The site might not work properly on tablets. Click here to dismiss this message.</div>
+  <div id="volumeWarning">Adjust the volume slider to unmute the video.</div>
 
   <video id="myVideo" autoplay playsinline muted>
     <source id="videoSource" src="never kys.mp4" type="video/mp4">
@@ -168,7 +173,7 @@
   <script>
     const MAIN_VIDEO = "never kys.mp4";
     const RARE_VIDEO = "kys.mp4";
-    const CHANCE = 0.05; // 1 in 20
+    const CHANCE = 0.05; // 1 in 20 chance for Easter Egg
 
     const video = document.getElementById("myVideo");
     const source = document.getElementById("videoSource");
@@ -178,6 +183,7 @@
     const mobileToggleButton = document.getElementById("mobileToggleButton");
     const unmuteButton = document.getElementById("unmuteButton");
     const tabletWarning = document.getElementById("tabletWarning");
+    const volumeWarning = document.getElementById("volumeWarning");
 
     const sessionCounter = document.getElementById("watchCountSession");
     const totalCounter = document.getElementById("watchCountTotal");
@@ -220,10 +226,9 @@
     }
 
     window.addEventListener("load", () => {
-      // Ensure the video is muted initially for autoplay to work
-      video.muted = true;
+      video.muted = true; // Mute the video initially
+      video.play();
 
-      // Optionally, switch to Easter egg video
       if (Math.random() < CHANCE) {
         isEasterEgg = true;
         switchVideoTo(RARE_VIDEO);
@@ -236,6 +241,7 @@
       video.volume = volumeSlider.value;
       if (video.muted && video.volume > 0) {
         video.muted = false;
+        volumeWarning.style.display = "none"; // Hide the warning once unmuted
       }
     });
 
@@ -251,8 +257,8 @@
 
     function unmuteVideo() {
       video.muted = false;
-      unmuteButton.style.display = "none"; // Hide the unmute button after unmuting
-      video.play(); // Start playing the video if paused
+      unmuteButton.style.display = "none";
+      video.play();
     }
 
     function toggleControls() {
@@ -260,17 +266,21 @@
       controls.style.display = isHidden ? "flex" : "none";
       sessionCounter.style.display = isHidden ? "block" : "none";
       totalCounter.style.display = isHidden ? "block" : "none";
-      infoBox.style.display = isHidden ? "block" : "none";  // Ensure the "Press A" text toggles as well
+      infoBox.style.display = isHidden ? "block" : "none";
     }
 
     function hideTabletWarning() {
-      tabletWarning.style.display = "none"; // Hide the tablet warning when clicked
-      localStorage.setItem("tabletWarningDismissed", "true"); // Mark it as dismissed
+      tabletWarning.style.display = "none";
+      localStorage.setItem("tabletWarningDismissed", "true");
     }
 
-    // Show tablet warning only if it has not been dismissed yet
     if (!localStorage.getItem("tabletWarningDismissed")) {
-      tabletWarning.style.display = "block"; // Show the tablet warning
+      tabletWarning.style.display = "block";
+    }
+
+    // Show the volume warning if muted
+    if (video.muted) {
+      volumeWarning.style.display = "block";
     }
   </script>
 </body>
