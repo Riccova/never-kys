@@ -25,20 +25,23 @@
       object-fit: contain;
     }
 
-    #controls, #watchCountSession, #watchCountTotal, #infoBox {
+    #controls {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    #watchCountSession, #watchCountTotal {
       position: absolute;
       z-index: 10;
       background: rgba(0, 0, 0, 0.6);
       padding: 10px 15px;
       border-radius: 8px;
-    }
-
-    #controls {
-      top: 20px;
-      left: 20px;
-      display: flex;
-      gap: 10px;
-      align-items: center;
+      font-size: 14px;
     }
 
     #watchCountSession {
@@ -53,9 +56,16 @@
     }
 
     #infoBox {
+      position: absolute;
       bottom: 60px;
       left: 50%;
       transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-size: 14px;
+      display: block;
+      z-index: 15;
     }
 
     #mobileToggleButton {
@@ -78,8 +88,17 @@
         display: block;
       }
       #infoBox {
-        display: none !important;
+        display: block !important;
       }
+    }
+
+    /* Fix overlap issue */
+    #volumeSlider {
+      margin-top: 10px;
+    }
+
+    #unmuteBtn {
+      margin-bottom: 10px;
     }
   </style>
 </head>
@@ -92,8 +111,8 @@
 
   <div id="watchCountSession">Times Watched This Session: 0</div>
   <div id="watchCountTotal">Total Times Watched: 0</div>
-  <div id="infoBox">Press "A" to hide/show the GUI controls</div>
-  <div id="mobileToggleButton">Toggle Controls (Mobile)</div>
+  <div id="infoBox">Press "A" to hide/show the GUI</div>
+  <div id="mobileToggleButton">Hide/Show GUI</div>
 
   <video id="myVideo" autoplay muted playsinline>
     <source id="videoSource" src="never kys.mp4" type="video/mp4">
@@ -187,9 +206,7 @@
       controls.style.display = isHidden ? "flex" : "none";
       sessionCounter.style.display = isHidden ? "block" : "none";
       totalCounter.style.display = isHidden ? "block" : "none";
-      if (window.innerWidth > 768) {
-        infoBox.style.display = isHidden ? "block" : "none";
-      }
+      infoBox.style.display = isHidden ? "block" : "none";  // Ensure the "Press A" text toggles as well
     }
   </script>
 </body>
