@@ -64,9 +64,8 @@
       padding: 10px 15px;
       border-radius: 8px;
       font-size: 14px;
-      z-index: 15;
       display: block;
-      cursor: pointer;
+      z-index: 15;
     }
 
     #mobileToggleButton {
@@ -114,26 +113,23 @@
       display: none;
     }
 
-    #volumeWarning {
-      background: rgba(255, 255, 255, 0.1);
-      padding: 8px 10px;
-      border-radius: 6px;
+    #volumeInfo {
       font-size: 13px;
-      margin-top: -5px;
-      display: none;
+      color: #aaa;
     }
 
     @media (max-width: 1024px) {
-      #mobileToggleButton {
-        display: block;
-      }
-
+      #mobileToggleButton,
       #unmuteButton {
         display: block;
       }
 
       #infoBox {
         display: none !important;
+      }
+
+      #volumeInfo {
+        display: none;
       }
 
       #controls {
@@ -145,10 +141,10 @@
         font-size: 12px;
         padding: 8px 10px;
       }
+    }
 
-      #volumeWarning {
-        display: none !important;
-      }
+    #volumeSlider {
+      margin-top: 10px;
     }
   </style>
 </head>
@@ -156,7 +152,7 @@
   <div id="controls">
     <label for="volumeSlider">Volume</label>
     <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5">
-    <div id="volumeWarning">Adjust the volume slider to unmute</div>
+    <span id="volumeInfo">Adjust volume slider to unmute</span>
   </div>
 
   <div id="watchCountSession">Times Watched This Session: 0</div>
@@ -174,24 +170,27 @@
   <script>
     const MAIN_VIDEO = "never kys.mp4";
     const RARE_VIDEO = "kys.mp4";
-    const CHANCE = 0.05;
+    const CHICKEN_VIDEO = "chicken.mp4";
+
+    const EASTER_CHANCE = 1 / 20;
+    const CHICKEN_CHANCE = 1 / 50;
 
     const video = document.getElementById("myVideo");
     const source = document.getElementById("videoSource");
     const volumeSlider = document.getElementById("volumeSlider");
+    const volumeInfo = document.getElementById("volumeInfo");
     const controls = document.getElementById("controls");
     const infoBox = document.getElementById("infoBox");
     const mobileToggleButton = document.getElementById("mobileToggleButton");
     const unmuteButton = document.getElementById("unmuteButton");
     const tabletWarning = document.getElementById("tabletWarning");
-    const volumeWarning = document.getElementById("volumeWarning");
-
     const sessionCounter = document.getElementById("watchCountSession");
     const totalCounter = document.getElementById("watchCountTotal");
 
     let sessionViews = 0;
     let totalViews = parseInt(localStorage.getItem("totalViews") || "0");
     let isEasterEgg = false;
+    let isChicken = false;
 
     updateCounters();
 
@@ -208,6 +207,12 @@
     }
 
     function handleVideoEnd() {
+      if (isChicken) {
+        isChicken = false;
+        switchVideoTo(MAIN_VIDEO);
+        return;
+      }
+
       sessionViews++;
       totalViews++;
       localStorage.setItem("totalViews", totalViews);
@@ -217,7 +222,11 @@
         isEasterEgg = false;
         switchVideoTo(MAIN_VIDEO);
       } else {
-        if (Math.random() < CHANCE) {
+        const roll = Math.random();
+        if (roll < CHICKEN_CHANCE) {
+          isChicken = true;
+          switchVideoTo(CHICKEN_VIDEO);
+        } else if (roll < CHICKEN_CHANCE + EASTER_CHANCE) {
           isEasterEgg = true;
           switchVideoTo(RARE_VIDEO);
         } else {
@@ -227,17 +236,23 @@
     }
 
     window.addEventListener("load", () => {
-      if (window.innerWidth > 1024) {
-        volumeWarning.style.display = "block";
-      }
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceChicken = urlParams.get("chicken") === "true";
 
-      if (Math.random() < CHANCE) {
-        isEasterEgg = true;
-        switchVideoTo(RARE_VIDEO);
-      }
+      video.muted = true;
 
-      if (window.innerWidth <= 1024) {
-        infoBox.style.display = "none";
+      if (forceChicken) {
+        isChicken = true;
+        switchVideoTo(CHICKEN_VIDEO);
+      } else {
+        const roll = Math.random();
+        if (roll < CHICKEN_CHANCE) {
+          isChicken = true;
+          switchVideoTo(CHICKEN_VIDEO);
+        } else if (roll < CHICKEN_CHANCE + EASTER_CHANCE) {
+          isEasterEgg = true;
+          switchVideoTo(RARE_VIDEO);
+        }
       }
     });
 
@@ -247,10 +262,7 @@
       video.volume = volumeSlider.value;
       if (video.muted && video.volume > 0) {
         video.muted = false;
-      }
-
-      if (volumeWarning.style.display !== "none") {
-        volumeWarning.style.display = "none";
+        volumeInfo.style.display = "none";
       }
     });
 
@@ -260,25 +272,20 @@
       }
     });
 
-    function toggleControls() {
-      const isHidden = controls.style.display === "none";
-      const isMobile = window.innerWidth <= 1024;
-
-      controls.style.display = isHidden ? "flex" : "none";
-      sessionCounter.style.display = isHidden ? "block" : "none";
-      totalCounter.style.display = isHidden ? "block" : "none";
-
-      if (!isMobile) {
-        infoBox.style.display = isHidden ? "block" : "none";
-      }
-    }
-
-    unmuteButton.addEventListener("click", unmuteVideo);
-
     function unmuteVideo() {
       video.muted = false;
       unmuteButton.style.display = "none";
       video.play();
+    }
+
+    function toggleControls() {
+      const isHidden = controls.style.display === "none";
+      controls.style.display = isHidden ? "flex" : "none";
+      sessionCounter.style.display = isHidden ? "block" : "none";
+      totalCounter.style.display = isHidden ? "block" : "none";
+      if (window.innerWidth > 1024) {
+        infoBox.style.display = isHidden ? "block" : "none";
+      }
     }
 
     function hideTabletWarning() {
